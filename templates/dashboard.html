@@ -404,7 +404,7 @@
       };
       userGoals = goals;
       try {
-        await updateDoc(doc(db, 'users', currentUser.uid), { goals });
+        await setDoc(doc(db, 'users', currentUser.uid), { goals }, { merge: true });
         await loadData();
         const btn = document.querySelector('.btn-save');
         btn.textContent = '✓ Saved!';
