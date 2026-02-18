@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SimCal — Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #1a1a24;
+      --border: #2a2a3a;
+      --accent: #7c6af7;
+      --accent2: #f06f4b;
+      --text: #e8e8f0;
+      --muted: #6b6b80;
+      --green: #4ade80;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .bg-orbs {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    }
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.12;
+    }
+    .orb-1 { width: 500px; height: 500px; background: var(--accent); top: -100px; right: -100px; animation: drift1 12s ease-in-out infinite; }
+    .orb-2 { width: 400px; height: 400px; background: var(--accent2); bottom: -80px; left: -80px; animation: drift2 15s ease-in-out infinite; }
+    .orb-3 { width: 300px; height: 300px; background: var(--green); top: 40%; left: 30%; animation: drift3 10s ease-in-out infinite; }
+
+    @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,20px)} }
+    @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-30px)} }
+    @keyframes drift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-15px,15px)} }
+
+    .card {
+      position: relative; z-index: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 44px;
+      width: 420px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+    .logo span { color: var(--accent); }
+
+    .tagline {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 36px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--surface2);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+    .tab {
+      flex: 1; padding: 10px;
+      border: none; background: transparent; color: var(--muted);
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+      border-radius: 8px; cursor: pointer; transition: all 0.2s;
+    }
+    .tab.active { background: var(--surface); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    input {
+      width: 100%; padding: 13px 16px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 12px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 15px;
+      outline: none; transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--accent); }
+    input::placeholder { color: var(--muted); }
+
+    .btn {
+      width: 100%; padding: 14px;
+      background: var(--accent); border: none; border-radius: 12px;
+      color: #fff; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+      cursor: pointer; margin-top: 8px; transition: all 0.2s; letter-spacing: 0.02em;
+    }
+    .btn:hover { background: #6a58e0; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(124,106,247,0.3); }
+    .btn:active { transform: translateY(0); }
+
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 20px 0; color: var(--muted); font-size: 12px;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .btn-google {
+      width: 100%; padding: 13px;
+      background: transparent; border: 1px solid var(--border); border-radius: 12px;
+      color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: all 0.2s;
+    }
+    .btn-google:hover { border-color: var(--accent); background: rgba(124,106,247,0.05); }
+    .btn-google img { width: 18px; height: 18px; }
+
+    .error-msg {
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      color: #f87171; border-radius: 10px; padding: 10px 14px;
+      font-size: 13px; margin-top: 12px; display: none;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="card">
+    <div class="logo">Sim<span>Cal</span></div>
+    <p class="tagline">Aggregation of Simple Calories</p>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')">Sign In</button>
+      <button class="tab" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <div id="panel-login" class="panel active">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" />
+      </div>
+      <button class="btn" onclick="login()">Sign In</button>
+      <div class="divider">or</div>
+      <button class="btn-google" onclick="loginGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+        Continue with Google
+      </button>
+      <div class="error-msg" id="login-error"></div>
+    </div>
+
+    <div id="panel-signup" class="panel">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="signup-name" placeholder="Nicolas" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signup-password" placeholder="••••••••" />
+      </div>
+      <button class="btn" onclick="signup()">Create Account</button>
+      <div class="divider">or</div>
+      <button class="btn-google" onclick="loginGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+        Continue with Google
+      </button>
+      <div class="error-msg" id="signup-error"></div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    // ===== PASTE YOUR FIREBASE CONFIG HERE =====
+    const firebaseConfig = {
+      apiKey: "AIzaSyBVR09VER0k3nLv-OjU7ARB1CdUKKG7_14",
+      authDomain: "planner-beebb.firebaseapp.com",
+      projectId: "planner-beebb",
+      storageBucket: "planner-beebb.firebasestorage.app",
+      messagingSenderId: "1007032615851",
+      appId: "1:1007032615851:web:8bb9bb8321c25bb6e908ee"
+    };
+    // ==========================================
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) window.location.href = '/chat';
+    });
+
+    async function ensureUserDoc(user, name) {
+      const ref = doc(db, 'users', user.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, {
+          name: name || user.displayName || user.email.split('@')[0],
+          email: user.email,
+          goals: { calories: 2000, protein_g: 150, carbs_g: 250, fat_g: 65, water_ml: 2000 },
+          createdAt: new Date().toISOString()
+        });
+      }
+    }
+
+    window.switchTab = (tab) => {
+      document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'signup')));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + tab).classList.add('active');
+    };
+
+    window.showError = (id, msg) => {
+      const el = document.getElementById(id);
+      el.textContent = msg; el.style.display = 'block';
+    };
+
+    window.login = async () => {
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch (e) {
+        window.showError('login-error', e.message);
+      }
+    };
+
+    window.signup = async () => {
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const pass = document.getElementById('signup-password').value;
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+        await updateProfile(cred.user, { displayName: name });
+        await ensureUserDoc(cred.user, name);
+      } catch (e) {
+        window.showError('signup-error', e.message);
+      }
+    };
+
+    window.loginGoogle = async () => {
+      try {
+        const cred = await signInWithPopup(auth, provider);
+        await ensureUserDoc(cred.user);
+      } catch (e) {
+        window.showError('login-error', e.message);
+      }
+    };
+  </script>
+</body>
+</html>
