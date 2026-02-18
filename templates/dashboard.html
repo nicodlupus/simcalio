@@ -3,117 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SimCal — Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <title>SimCalio — Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0a0a0f; --surface: #111118; --surface2: #1a1a24; --surface3: #222230;
-      --border: #2a2a3a; --accent: #7c6af7; --accent2: #f06f4b; --text: #e8e8f0;
-      --muted: #6b6b80; --green: #4ade80; --cyan: #22d3ee; --yellow: #f59e0b; --blue: #60a5fa;
-    }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
-    nav {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 20px; border-bottom: 1px solid var(--border);
-      background: var(--surface); position: sticky; top: 0; z-index: 10; flex-wrap: wrap; gap: 8px;
-    }
-    .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; }
-    .nav-logo span { color: var(--accent); }
-    .nav-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .btn-nav {
-      padding: 7px 12px; background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 10px; color: var(--text); font-size: 13px; cursor: pointer; transition: all 0.2s;
-      font-family: 'DM Sans', sans-serif; white-space: nowrap;
-    }
-    .btn-nav:hover { border-color: var(--accent); color: var(--accent); }
-    .date-pill { padding: 6px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
-    .date-pill input[type="date"] { background: transparent; border: none; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; cursor: pointer; }
-    .page { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
-    .greeting { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-    .greeting span { color: var(--accent); }
-    .sub-greeting { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
-    .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
-    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; position: relative; overflow: hidden; animation: fadeUp 0.5s ease both; }
-    .stat-card::before { content: ''; position: absolute; inset: 0; opacity: 0.04; }
-    .stat-card:nth-child(1)::before { background: var(--accent2); }
-    .stat-card:nth-child(2)::before { background: var(--blue); }
-    .stat-card:nth-child(3)::before { background: var(--accent); }
-    .stat-card:nth-child(4)::before { background: var(--yellow); }
-    .stat-card:nth-child(5)::before { background: var(--cyan); }
-    .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
-    .stat-val { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; }
-    .stat-card:nth-child(1) .stat-val { color: var(--accent2); }
-    .stat-card:nth-child(2) .stat-val { color: var(--blue); }
-    .stat-card:nth-child(3) .stat-val { color: var(--accent); }
-    .stat-card:nth-child(4) .stat-val { color: var(--yellow); }
-    .stat-card:nth-child(5) .stat-val { color: var(--cyan); }
-    .stat-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
-    .stat-progress { height: 4px; background: var(--surface2); border-radius: 2px; margin-top: 8px; overflow: hidden; }
-    .stat-fill { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
-    .stat-card:nth-child(1) .stat-fill { background: var(--accent2); }
-    .stat-card:nth-child(2) .stat-fill { background: var(--blue); }
-    .stat-card:nth-child(3) .stat-fill { background: var(--accent); }
-    .stat-card:nth-child(4) .stat-fill { background: var(--yellow); }
-    .stat-card:nth-child(5) .stat-fill { background: var(--cyan); }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 20px; animation: fadeUp 0.5s ease both; }
-    .panel-title { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 16px; }
-    canvas { max-height: 200px; width: 100% !important; }
-    .micro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .micro-row { display: flex; flex-direction: column; gap: 4px; }
-    .micro-label { display: flex; justify-content: space-between; font-size: 12px; }
-    .micro-name { color: var(--text); }
-    .micro-val { color: var(--muted); }
-    .micro-bar { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
-    .micro-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
-
-    /* MEALS TABLE */
-    .meals-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .meals-table th { text-align: left; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 0 10px; font-weight: 600; }
-    .meals-table td { padding: 8px 0; border-bottom: 1px solid var(--border); vertical-align: middle; }
-    .meals-table tr:last-child td { border-bottom: none; }
-    .meal-type-badge {
-      display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.05em;
-    }
-    .badge-breakfast { background: rgba(251,191,36,0.15); color: #fbbf24; }
-    .badge-lunch { background: rgba(74,222,128,0.15); color: #4ade80; }
-    .badge-dinner { background: rgba(124,106,247,0.15); color: #7c6af7; }
-    .badge-snack { background: rgba(240,111,75,0.15); color: #f06f4b; }
-    .badge-water { background: rgba(34,211,238,0.15); color: #22d3ee; }
-    .badge-supplements { background: rgba(167,139,250,0.15); color: #a78bfa; }
-    .badge-any { background: rgba(107,107,128,0.15); color: #9ca3af; }
-
-    .goals-form { display: flex; flex-direction: column; gap: 12px; }
-    .goal-row { display: flex; align-items: center; gap: 10px; }
-    .goal-label { font-size: 13px; color: var(--muted); width: 80px; flex-shrink: 0; }
-    .goal-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; transition: border-color 0.2s; }
-    .goal-input:focus { border-color: var(--accent); }
-    .goal-unit { font-size: 12px; color: var(--muted); width: 30px; flex-shrink: 0; }
-    .btn-save { padding: 10px 20px; background: var(--accent); border: none; border-radius: 10px; color: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; align-self: flex-start; }
-    .btn-save:hover { background: #6a58e0; }
-    .no-data { color: var(--muted); font-size: 13px; text-align: center; padding: 20px 0; }
-
-    @media (max-width: 768px) {
-      .stats-row { grid-template-columns: repeat(2, 1fr); }
-      .stats-row .stat-card:nth-child(5) { grid-column: span 2; }
-      .grid-2 { grid-template-columns: 1fr; }
-      .page { padding: 16px 12px; }
-      nav { padding: 10px 12px; }
-      .greeting { font-size: 18px; }
-    }
-    @media (max-width: 480px) {
-      .micro-grid { grid-template-columns: 1fr; }
-      .meals-table th:last-child, .meals-table td:last-child { display: none; }
-    }
-  </style>
 </head>
 <body>
+
   <nav>
-    <div class="nav-logo">Sim<span>Cal</span></div>
+    <div class="nav-logo">SimCal<span>io</span></div>
     <div class="nav-right">
       <div class="date-pill">📅 <input type="date" id="date-picker" /></div>
       <button class="btn-nav" onclick="window.location.href='/chat'">← Chat</button>
@@ -125,201 +22,100 @@
     <div class="greeting">Good day, <span id="user-name">...</span></div>
     <p class="sub-greeting" id="date-label">Loading your nutrition data...</p>
 
+    <!-- STAT CARDS -->
     <div class="stats-row">
-      <div class="stat-card"><div class="stat-label">Calories</div><div class="stat-val" id="s-cals">—</div><div class="stat-sub" id="s-cals-sub">of — goal</div><div class="stat-progress"><div class="stat-fill" id="sf-cals" style="width:0%"></div></div></div>
-      <div class="stat-card"><div class="stat-label">Protein</div><div class="stat-val" id="s-prot">—</div><div class="stat-sub" id="s-prot-sub">of — goal</div><div class="stat-progress"><div class="stat-fill" id="sf-prot" style="width:0%"></div></div></div>
-      <div class="stat-card"><div class="stat-label">Carbs</div><div class="stat-val" id="s-carbs">—</div><div class="stat-sub" id="s-carbs-sub">of — goal</div><div class="stat-progress"><div class="stat-fill" id="sf-carbs" style="width:0%"></div></div></div>
-      <div class="stat-card"><div class="stat-label">Fat</div><div class="stat-val" id="s-fat">—</div><div class="stat-sub" id="s-fat-sub">of — goal</div><div class="stat-progress"><div class="stat-fill" id="sf-fat" style="width:0%"></div></div></div>
-      <div class="stat-card"><div class="stat-label">Water</div><div class="stat-val" id="s-water">—</div><div class="stat-sub" id="s-water-sub">of — goal</div><div class="stat-progress"><div class="stat-fill" id="sf-water" style="width:0%"></div></div></div>
+      <div class="stat-card">
+        <div class="stat-label">Calories</div>
+        <div class="stat-val" id="s-cals">—</div>
+        <div class="stat-sub" id="s-cals-sub">of — goal</div>
+        <div class="stat-progress"><div class="stat-fill" id="sf-cals" style="width:0%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Protein</div>
+        <div class="stat-val" id="s-prot">—</div>
+        <div class="stat-sub" id="s-prot-sub">of — goal</div>
+        <div class="stat-progress"><div class="stat-fill" id="sf-prot" style="width:0%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Carbs</div>
+        <div class="stat-val" id="s-carbs">—</div>
+        <div class="stat-sub" id="s-carbs-sub">of — goal</div>
+        <div class="stat-progress"><div class="stat-fill" id="sf-carbs" style="width:0%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Fat</div>
+        <div class="stat-val" id="s-fat">—</div>
+        <div class="stat-sub" id="s-fat-sub">of — goal</div>
+        <div class="stat-progress"><div class="stat-fill" id="sf-fat" style="width:0%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Water</div>
+        <div class="stat-val" id="s-water">—</div>
+        <div class="stat-sub" id="s-water-sub">of — goal</div>
+        <div class="stat-progress"><div class="stat-fill" id="sf-water" style="width:0%"></div></div>
+      </div>
     </div>
 
+    <!-- CHARTS -->
     <div class="grid-2">
-      <div class="panel"><div class="panel-title">Macro Breakdown</div><canvas id="chart-macros"></canvas></div>
-      <div class="panel"><div class="panel-title">Goal Progress</div><canvas id="chart-goals"></canvas></div>
+      <div class="panel">
+        <div class="panel-title">Macro Breakdown</div>
+        <canvas id="chart-macros"></canvas>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Goal Progress</div>
+        <canvas id="chart-goals"></canvas>
+      </div>
     </div>
 
+    <!-- MICROS + MEALS -->
     <div class="grid-2" style="margin-bottom:16px">
-      <div class="panel"><div class="panel-title">Micronutrients</div><div class="micro-grid" id="micro-grid"><div class="no-data">No data yet</div></div></div>
-      <div class="panel"><div class="panel-title">Today's Meals</div><div id="meals-container"><div class="no-data">No meals logged yet</div></div></div>
+      <div class="panel">
+        <div class="panel-title">Micronutrients</div>
+        <div class="micro-grid" id="micro-grid"><div class="no-data">No data yet</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Today's Meals</div>
+        <div id="meals-container"><div class="no-data">No meals logged yet</div></div>
+      </div>
     </div>
 
+    <!-- DAILY GOALS -->
     <div class="panel" style="max-width: 420px">
       <div class="panel-title">Daily Goals</div>
       <div class="goals-form">
-        <div class="goal-row"><span class="goal-label">Calories</span><input class="goal-input" type="number" id="g-cals" value="2000" /><span class="goal-unit">kcal</span></div>
-        <div class="goal-row"><span class="goal-label">Protein</span><input class="goal-input" type="number" id="g-prot" value="150" /><span class="goal-unit">g</span></div>
-        <div class="goal-row"><span class="goal-label">Carbs</span><input class="goal-input" type="number" id="g-carbs" value="250" /><span class="goal-unit">g</span></div>
-        <div class="goal-row"><span class="goal-label">Fat</span><input class="goal-input" type="number" id="g-fat" value="65" /><span class="goal-unit">g</span></div>
-        <div class="goal-row"><span class="goal-label">Water</span><input class="goal-input" type="number" id="g-water" value="2000" /><span class="goal-unit">ml</span></div>
-        <button class="btn-save" onclick="saveGoals()">Save Goals</button>
+        <div class="goal-row">
+          <span class="goal-label">Calories</span>
+          <input class="goal-input" type="number" id="g-cals" min="0" value="2000" />
+          <span class="goal-unit">kcal</span>
+        </div>
+        <div class="goal-row">
+          <span class="goal-label">Protein</span>
+          <input class="goal-input" type="number" id="g-prot" min="0" value="150" />
+          <span class="goal-unit">g</span>
+        </div>
+        <div class="goal-row">
+          <span class="goal-label">Carbs</span>
+          <input class="goal-input" type="number" id="g-carbs" min="0" value="250" />
+          <span class="goal-unit">g</span>
+        </div>
+        <div class="goal-row">
+          <span class="goal-label">Fat</span>
+          <input class="goal-input" type="number" id="g-fat" min="0" value="65" />
+          <span class="goal-unit">g</span>
+        </div>
+        <div class="goal-row">
+          <span class="goal-label">Water</span>
+          <input class="goal-input" type="number" id="g-water" min="0" value="2000" />
+          <span class="goal-unit">ml</span>
+        </div>
+        <button class="btn-save" id="btn-save-goals" onclick="saveGoals()">Save Goals</button>
       </div>
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-    import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+  <!-- JS loaded as module (required for Firebase ESM imports) -->
+  <script type="module" src="dashboard.js"></script>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBVR09VER0k3nLv-OjU7ARB1CdUKKG7_14",
-      authDomain: "planner-beebb.firebaseapp.com",
-      projectId: "planner-beebb",
-      storageBucket: "planner-beebb.firebasestorage.app",
-      messagingSenderId: "1007032615851",
-      appId: "1:1007032615851:web:8bb9bb8321c25bb6e908ee"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let currentUser = null;
-    let userName = '';
-    let userGoals = { calories: 2000, protein_g: 150, carbs_g: 250, fat_g: 65, water_ml: 2000 };
-    let currentDate = new Date().toISOString().split('T')[0];
-    let macroChart, goalChart;
-
-    const dp = document.getElementById('date-picker');
-    dp.value = currentDate;
-    dp.addEventListener('change', () => { currentDate = dp.value; loadData(); });
-
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) { window.location.href = '/'; return; }
-      currentUser = user;
-      try {
-        const snap = await getDoc(doc(db, 'users', user.uid));
-        if (snap.exists()) {
-          const d = snap.data();
-          userName = d.name || user.displayName || 'there';
-          userGoals = d.goals || userGoals;
-          document.getElementById('g-cals').value = userGoals.calories;
-          document.getElementById('g-prot').value = userGoals.protein_g;
-          document.getElementById('g-carbs').value = userGoals.carbs_g;
-          document.getElementById('g-fat').value = userGoals.fat_g;
-          document.getElementById('g-water').value = userGoals.water_ml;
-        } else {
-          userName = user.displayName || 'there';
-        }
-      } catch (e) { userName = user.displayName || 'there'; }
-      document.getElementById('user-name').textContent = userName;
-      await loadData();
-    });
-
-    window.logout = () => signOut(auth);
-
-    async function loadData() {
-      const dateLabel = new Date(currentDate + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      document.getElementById('date-label').textContent = dateLabel;
-      try {
-        const ref = doc(db, 'users', currentUser.uid, 'days', currentDate);
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          const data = snap.data();
-          renderAll(data.totals || {}, data.meals || []);
-        } else { renderAll({}, []); }
-      } catch (e) { console.error(e); renderAll({}, []); }
-    }
-
-    function pct(val, goal) { return Math.min(100, Math.round(((val || 0) / goal) * 100)) || 0; }
-
-    function renderAll(totals, meals) {
-      const g = userGoals;
-      const cals = Math.round(totals.calories || 0);
-      const prot = Math.round(totals.protein_g || 0);
-      const carbs = Math.round(totals.carbs_g || 0);
-      const fat = Math.round(totals.fat_g || 0);
-      const water = Math.round(totals.water_ml || 0);
-
-      document.getElementById('s-cals').textContent = cals + ' kcal';
-      document.getElementById('s-prot').textContent = prot + 'g';
-      document.getElementById('s-carbs').textContent = carbs + 'g';
-      document.getElementById('s-fat').textContent = fat + 'g';
-      document.getElementById('s-water').textContent = water + 'ml';
-      document.getElementById('s-cals-sub').textContent = `of ${g.calories} goal`;
-      document.getElementById('s-prot-sub').textContent = `of ${g.protein_g}g goal`;
-      document.getElementById('s-carbs-sub').textContent = `of ${g.carbs_g}g goal`;
-      document.getElementById('s-fat-sub').textContent = `of ${g.fat_g}g goal`;
-      document.getElementById('s-water-sub').textContent = `of ${g.water_ml}ml goal`;
-      document.getElementById('sf-cals').style.width = pct(cals, g.calories) + '%';
-      document.getElementById('sf-prot').style.width = pct(prot, g.protein_g) + '%';
-      document.getElementById('sf-carbs').style.width = pct(carbs, g.carbs_g) + '%';
-      document.getElementById('sf-fat').style.width = pct(fat, g.fat_g) + '%';
-      document.getElementById('sf-water').style.width = pct(water, g.water_ml) + '%';
-
-      const mCtx = document.getElementById('chart-macros').getContext('2d');
-      if (macroChart) macroChart.destroy();
-      macroChart = new Chart(mCtx, {
-        type: 'doughnut',
-        data: { labels: ['Protein', 'Carbs', 'Fat'], datasets: [{ data: [prot||0.1, carbs||0.1, fat||0.1], backgroundColor: ['#60a5fa','#7c6af7','#f59e0b'], borderWidth: 0, hoverOffset: 6 }] },
-        options: { plugins: { legend: { labels: { color: '#6b6b80', font: { family: 'DM Sans', size: 12 } } } }, cutout: '65%', animation: { duration: 800 } }
-      });
-
-      const gCtx = document.getElementById('chart-goals').getContext('2d');
-      if (goalChart) goalChart.destroy();
-      goalChart = new Chart(gCtx, {
-        type: 'bar',
-        data: { labels: ['Calories','Protein','Carbs','Fat','Water'], datasets: [{ data: [pct(cals,g.calories),pct(prot,g.protein_g),pct(carbs,g.carbs_g),pct(fat,g.fat_g),pct(water,g.water_ml)], backgroundColor: ['#f06f4b','#60a5fa','#7c6af7','#f59e0b','#22d3ee'], borderRadius: 6, borderSkipped: false }] },
-        options: { plugins: { legend: { display: false } }, scales: { y: { max: 120, grid: { color: '#2a2a3a' }, ticks: { color: '#6b6b80', callback: v => v+'%' } }, x: { grid: { display: false }, ticks: { color: '#6b6b80', font: { size: 11 } } } }, animation: { duration: 800 } }
-      });
-
-      const micros = [
-        { label: 'Iron', val: totals.iron_mg||0, goal: 18, unit: 'mg', color: '#f06f4b' },
-        { label: 'Magnesium', val: totals.magnesium_mg||0, goal: 400, unit: 'mg', color: '#7c6af7' },
-        { label: 'Calcium', val: totals.calcium_mg||0, goal: 1000, unit: 'mg', color: '#60a5fa' },
-        { label: 'Potassium', val: totals.potassium_mg||0, goal: 3500, unit: 'mg', color: '#22d3ee' },
-        { label: 'Vit C', val: totals.vitamin_c_mg||0, goal: 90, unit: 'mg', color: '#4ade80' },
-        { label: 'Vit D', val: totals.vitamin_d_mcg||0, goal: 20, unit: 'mcg', color: '#f59e0b' },
-        { label: 'Vit B12', val: totals.vitamin_b12_mcg||0, goal: 2.4, unit: 'mcg', color: '#a78bfa' },
-        { label: 'Sodium', val: totals.sodium_mg||0, goal: 2300, unit: 'mg', color: '#fb7185' },
-      ];
-      document.getElementById('micro-grid').innerHTML = micros.map(m => `
-        <div class="micro-row">
-          <div class="micro-label"><span class="micro-name">${m.label}</span><span class="micro-val">${(m.val||0).toFixed(1)}/${m.goal}${m.unit}</span></div>
-          <div class="micro-bar"><div class="micro-fill" style="width:${pct(m.val,m.goal)}%;background:${m.color}"></div></div>
-        </div>`).join('');
-
-      const mealBadgeClass = { breakfast:'badge-breakfast', lunch:'badge-lunch', dinner:'badge-dinner', snack:'badge-snack', water:'badge-water', supplements:'badge-supplements', any:'badge-any' };
-
-      if (!meals.length) {
-        document.getElementById('meals-container').innerHTML = '<div class="no-data">No meals logged yet. Start chatting! 🍽️</div>';
-      } else {
-        document.getElementById('meals-container').innerHTML = `
-          <table class="meals-table">
-            <thead><tr><th>Type</th><th>Meal</th><th>Calories</th><th>Time</th></tr></thead>
-            <tbody>
-              ${meals.map(m => {
-                const time = new Date(m.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                const badgeClass = mealBadgeClass[m.mealType] || 'badge-any';
-                return `<tr>
-                  <td><span class="meal-type-badge ${badgeClass}">${m.mealType || 'meal'}</span></td>
-                  <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.name}</td>
-                  <td style="color:var(--accent2)">${Math.round(m.calories)} kcal</td>
-                  <td style="color:var(--muted)">${time}</td>
-                </tr>`;
-              }).join('')}
-            </tbody>
-          </table>`;
-      }
-    }
-
-    window.saveGoals = async () => {
-      const goals = {
-        calories: parseInt(document.getElementById('g-cals').value),
-        protein_g: parseInt(document.getElementById('g-prot').value),
-        carbs_g: parseInt(document.getElementById('g-carbs').value),
-        fat_g: parseInt(document.getElementById('g-fat').value),
-        water_ml: parseInt(document.getElementById('g-water').value),
-      };
-      userGoals = goals;
-      try {
-        await setDoc(doc(db, 'users', currentUser.uid), { goals }, { merge: true });
-        await loadData();
-        const btn = document.querySelector('.btn-save');
-        btn.textContent = '✓ Saved!';
-        setTimeout(() => btn.textContent = 'Save Goals', 2000);
-      } catch (e) { alert('Error saving goals: ' + e.message); }
-    };
-  </script>
 </body>
 </html>
